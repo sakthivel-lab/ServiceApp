@@ -1,0 +1,400 @@
+<div class="dashboard">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">Dashboard Overview</h1>
+      <p class="dashboard-subtitle">Real-time insights and system status</p>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button class="refresh-btn" (click)="refreshDashboard()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-icon-button class="filter-btn">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-container">
+    <div class="stats-grid">
+      <mat-card class="stat-card active-services">
+        <div class="stat-icon">
+          <mat-icon>engineering</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">18</div>
+          <div class="stat-label">Active Services</div>
+          <div class="stat-change positive">+12%</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card pending-services">
+        <div class="stat-icon">
+          <mat-icon>pending</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">7</div>
+          <div class="stat-label">Pending Services</div>
+          <div class="stat-change neutral">0%</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card completed">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">142</div>
+          <div class="stat-label">Completed</div>
+          <div class="stat-change positive">+8%</div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card critical-stock">
+        <div class="stat-icon">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-number">5</div>
+          <div class="stat-label">Critical Stock</div>
+          <div class="stat-change negative">+2</div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-container">
+    <div class="charts-grid">
+      <!-- Service Breakdown Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title class="chart-title">
+            <mat-icon class="title-icon">pie_chart</mat-icon>
+            Service Issue Breakdown
+          </mat-card-title>
+          <button mat-icon-button class="chart-menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div class="chart-wrapper">
+            <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Weekly Volume Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title class="chart-title">
+            <mat-icon class="title-icon">trending_up</mat-icon>
+            Weekly Volume
+          </mat-card-title>
+          <button mat-icon-button class="chart-menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div class="chart-wrapper">
+            <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" [type]="'line'">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- E-Bike Brand Service Volume Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title class="chart-title">
+            <mat-icon class="title-icon">electric_bike</mat-icon>
+            Brand Service Volume
+          </mat-card-title>
+          <button mat-icon-button class="chart-menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div class="chart-wrapper">
+            <canvas baseChart [type]="barChartType" [data]="barChartData" [options]="barChartOptions">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Fourth Chart Placeholder (can be added later) -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title class="chart-title">
+            <mat-icon class="title-icon">assessment</mat-icon>
+            Performance Metrics
+          </mat-card-title>
+          <button mat-icon-button class="chart-menu-btn">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content class="chart-content">
+          <div class="chart-wrapper">
+            <canvas baseChart [data]="barChartData" [options]="barChartOptions">
+            </canvas>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Service Metrics Row -->
+  <div class="service-metrics-grid">
+    <!-- Today's Appointments -->
+    <mat-card class="metric-card">
+      <mat-card-header>
+        <mat-card-title class="card-title">
+          <mat-icon class="title-icon">event</mat-icon>
+          Today's Appointments
+        </mat-card-title>
+        <button mat-icon-button class="refresh-btn" (click)="refreshAppointments()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <div class="appointment-stats">
+        <div class="stat-row">
+          <span class="stat-label">Scheduled</span>
+          <span class="stat-value">12</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Completed</span>
+          <span class="stat-value">8</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Pending</span>
+          <span class="stat-value">4</span>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="manage-btn">
+        <mat-icon class="btn-icon">calendar_today</mat-icon>
+        View Schedule
+      </button>
+    </mat-card>
+
+    <!-- Revenue Today -->
+    <mat-card class="metric-card">
+      <mat-card-header>
+        <mat-card-title class="card-title">
+          <mat-icon class="title-icon">payments</mat-icon>
+          Revenue Today
+        </mat-card-title>
+        <button mat-icon-button class="refresh-btn" (click)="refreshRevenue()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <div class="revenue-stats">
+        <div class="revenue-total">
+          <span class="revenue-value">₹15,000</span>
+          <span class="revenue-label">Total Revenue</span>
+        </div>
+        <div class="revenue-breakdown">
+          <div class="breakdown-item">
+            <span class="breakdown-label">Services</span>
+            <span class="breakdown-value">₹12,500</span>
+          </div>
+          <div class="breakdown-item">
+            <span class="breakdown-label">Parts</span>
+            <span class="breakdown-value">₹2,500</span>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="manage-btn">
+        <mat-icon class="btn-icon">receipt_long</mat-icon>
+        View Details
+      </button>
+    </mat-card>
+
+    <!-- Customer Feedback -->
+    <mat-card class="metric-card">
+      <mat-card-header>
+        <mat-card-title class="card-title">
+          <mat-icon class="title-icon">reviews</mat-icon>
+          Customer Feedback
+        </mat-card-title>
+        <button mat-icon-button class="refresh-btn" (click)="refreshFeedback()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <div class="feedback-stats">
+        <div class="feedback-rating">
+          <span class="rating-value">4.8</span>
+          <span class="rating-stars">★★★★☆</span>
+        </div>
+        <div class="feedback-counts">
+          <div class="count-item">
+            <span class="count-label">Reviews</span>
+            <span class="count-value">23</span>
+          </div>
+          <div class="count-item">
+            <span class="count-label">Pending</span>
+            <span class="count-value">5</span>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="manage-btn">
+        <mat-icon class="btn-icon">rate_review</mat-icon>
+        All Reviews
+      </button>
+    </mat-card>
+  </div>
+
+  <!-- Second Row - Critical Stock Card & Service Performance -->
+  <div class="bottom-cards-grid">
+    <mat-card class="critical-stock-card">
+      <mat-card-header>
+        <mat-card-title class="card-title">
+          <mat-icon class="title-icon">inventory_2</mat-icon>
+          Critical Stock Alerts
+          <span class="alert-count">5</span>
+        </mat-card-title>
+        <button mat-icon-button class="refresh-btn" (click)="refreshStock()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <div class="stock-list">
+        <div class="stock-item critical">
+          <div class="item-info">
+            <div class="item-name">Battery Pack A12</div>
+            <div class="item-sku">SKU: BP-A12-001</div>
+            <div class="item-location">Warehouse A</div>
+          </div>
+          <div class="stock-info">
+            <span class="stock-count">3 units</span>
+            <span class="stock-status">Critical</span>
+          </div>
+        </div>
+
+        <div class="stock-item critical">
+          <div class="item-info">
+            <div class="item-name">Solar Panel 300W</div>
+            <div class="item-sku">SKU: SP-300-015</div>
+            <div class="item-location">Warehouse B</div>
+          </div>
+          <div class="stock-info">
+            <span class="stock-count">5 units</span>
+            <span class="stock-status">Critical</span>
+          </div>
+        </div>
+
+        <div class="stock-item low">
+          <div class="item-info">
+            <div class="item-name">Inverter 5kVA</div>
+            <div class="item-sku">SKU: INV-5K-008</div>
+            <div class="item-location">Warehouse A</div>
+          </div>
+          <div class="stock-info">
+            <span class="stock-count">8 units</span>
+            <span class="stock-status">Low</span>
+          </div>
+        </div>
+
+        <div class="stock-item critical">
+          <div class="item-info">
+            <div class="item-name">Charge Controller 40A</div>
+            <div class="item-sku">SKU: CC-40-023</div>
+            <div class="item-location">Warehouse C</div>
+          </div>
+          <div class="stock-info">
+            <span class="stock-count">2 units</span>
+            <span class="stock-status">Critical</span>
+          </div>
+        </div>
+
+        <div class="stock-item low">
+          <div class="item-info">
+            <div class="item-name">Battery Cable 2m</div>
+            <div class="item-sku">SKU: BC-2M-045</div>
+            <div class="item-location">Warehouse B</div>
+          </div>
+          <div class="stock-info">
+            <span class="stock-count">12 units</span>
+            <span class="stock-status">Low</span>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="manage-btn">
+        <mat-icon class="btn-icon">visibility</mat-icon>
+        View All Inventory
+      </button>
+    </mat-card>
+
+    <!-- Service Performance Card -->
+    <mat-card class="service-performance-card">
+      <mat-card-header>
+        <mat-card-title class="card-title">
+          <mat-icon class="title-icon">speed</mat-icon>
+          Service Performance
+        </mat-card-title>
+        <button mat-icon-button class="refresh-btn" (click)="refreshPerformance()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <div class="performance-metrics">
+        <div class="metric-item">
+          <div class="metric-icon">
+            <mat-icon>schedule</mat-icon>
+          </div>
+          <div class="metric-content">
+            <div class="metric-value">2.5 hrs</div>
+            <div class="metric-label">Avg Service Time</div>
+            <div class="metric-change positive">-15 min</div>
+          </div>
+        </div>
+
+        <div class="metric-item">
+          <div class="metric-icon">
+            <mat-icon>sentiment_very_satisfied</mat-icon>
+          </div>
+          <div class="metric-content">
+            <div class="metric-value">4.8</div>
+            <div class="metric-label">Customer Rating</div>
+            <div class="metric-change positive">+0.2</div>
+          </div>
+        </div>
+
+        <div class="metric-item">
+          <div class="metric-icon">
+            <mat-icon>payments</mat-icon>
+          </div>
+          <div class="metric-content">
+            <div class="metric-value">₹1,250</div>
+            <div class="metric-label">Avg Revenue/Service</div>
+            <div class="metric-change positive">+8%</div>
+          </div>
+        </div>
+
+        <div class="metric-item">
+          <div class="metric-icon">
+            <mat-icon>repeat</mat-icon>
+          </div>
+          <div class="metric-content">
+            <div class="metric-value">68%</div>
+            <div class="metric-label">Repeat Customers</div>
+            <div class="metric-change neutral">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <button mat-stroked-button class="manage-btn">
+        <mat-icon class="btn-icon">analytics</mat-icon>
+        View Analytics
+      </button>
+    </mat-card>
+  </div>
+</div>

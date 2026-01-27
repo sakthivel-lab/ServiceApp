@@ -1,0 +1,199 @@
+<div class="customers-container">
+    <!-- Header Section -->
+    <div class="header-section">
+        <div class="header-left">
+            <h1 class="page-title">Customers</h1>
+            <p class="total-customers">Total Customers: <span class="count">{{ totalCustomers }}</span></p>
+        </div>
+        <div class="header-right">
+            <button mat-raised-button color="primary" class="add-customer-btn" (click)="openAddCustomerDialog()">
+                <mat-icon>add</mat-icon>
+                Add Customer
+            </button>
+        </div>
+    </div>
+
+    <!-- Customer Stats Cards -->
+    <div class="stats-container">
+        <div class="stats-grid">
+            <!-- Total Customers Card -->
+            <div class="stat-card-wrapper">
+                <mat-card class="stat-card total-customers-card">
+                    <div class="stat-content-container">
+                        <div class="stat-icon">
+                            <mat-icon>people</mat-icon>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ totalCustomers }}</div>
+                            <div class="stat-label">Total Customers</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button mat-icon-button class="view-details-btn" (click)="toggleTotalDetails()">
+                            <span class="btn-text">View Details</span>
+                            <mat-icon>{{ showTotalDetails ? 'chevron_down' : 'chevron_right' }}</mat-icon>
+                        </button>
+                    </div>
+                </mat-card>
+            </div>
+
+            <!-- New Customers Card -->
+            <div class="stat-card-wrapper">
+                <mat-card class="stat-card new-customers-card">
+                    <div class="stat-content-container">
+                        <div class="stat-icon">
+                            <mat-icon>person_add</mat-icon>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ newCustomers }}</div>
+                            <div class="stat-label">New Customers</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button mat-icon-button class="view-details-btn" (click)="toggleNewDetails()">
+                            <span class="btn-text">View Details</span>
+                            <mat-icon>{{ showNewDetails ? 'chevron_down' : 'chevron_right' }}</mat-icon>
+                        </button>
+                    </div>
+                </mat-card>
+            </div>
+
+            <!-- Active Repairs Card -->
+            <div class="stat-card-wrapper">
+                <mat-card class="stat-card active-repairs-card">
+                    <div class="stat-content-container">
+                        <div class="stat-icon">
+                            <mat-icon>build</mat-icon>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ activeRepairs }}</div>
+                            <div class="stat-label">Active Repairs</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button mat-icon-button class="view-details-btn" (click)="toggleActiveDetails()">
+                            <span class="btn-text">View Details</span>
+                            <mat-icon>{{ showActiveDetails ? 'chevron_down' : 'chevron_right' }}</mat-icon>
+                        </button>
+                    </div>
+                </mat-card>
+            </div>
+
+            <!-- Pending Service Card -->
+            <div class="stat-card-wrapper">
+                <mat-card class="stat-card pending-service-card">
+                    <div class="stat-content-container">
+                        <div class="stat-icon">
+                            <mat-icon>pending_actions</mat-icon>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">{{ pendingService }}</div>
+                            <div class="stat-label">Pending Service</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button mat-icon-button class="view-details-btn" (click)="togglePendingDetails()">
+                            <span class="btn-text">View Details</span>
+                            <mat-icon>{{ showPendingDetails ? 'chevron_down' : 'chevron_right' }}</mat-icon>
+                        </button>
+                    </div>
+                </mat-card>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-section">
+        <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Search Customers</mat-label>
+            <input matInput placeholder="Search by name, email, phone..." [(ngModel)]="searchTerm"
+                (keyup)="onSearchChange($event)" autocomplete="off">
+            <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Filter by Status</mat-label>
+            <mat-select [(value)]="selectedStatus" (selectionChange)="onFilterChange($event)">
+                <mat-option value="">All</mat-option>
+                <mat-option value="active">Active</mat-option>
+                <mat-option value="inactive">Inactive</mat-option>
+                <mat-option value="pending">Pending</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="table-container">
+        <mat-table [dataSource]="paginatedCustomers" matSort class="customers-table">
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Customer Name</mat-header-cell>
+                <mat-cell *matCellDef="let customer">{{ customer.name }}</mat-cell>
+            </ng-container>
+
+            <!-- Email Column -->
+            <ng-container matColumnDef="email">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
+                <mat-cell *matCellDef="let customer">{{ customer.email }}</mat-cell>
+            </ng-container>
+
+            <!-- Phone Column -->
+            <ng-container matColumnDef="phone">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Phone</mat-header-cell>
+                <mat-cell *matCellDef="let customer">{{ customer.phone }}</mat-cell>
+            </ng-container>
+
+            <!-- Bike Model Column -->
+            <ng-container matColumnDef="bikeModel">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Bike Model</mat-header-cell>
+                <mat-cell *matCellDef="let customer">{{ customer.bikeModel }}</mat-cell>
+            </ng-container>
+
+            <!-- Status Column -->
+            <ng-container matColumnDef="status">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                <mat-cell *matCellDef="let customer">
+                    <span class="status-badge" [class]="customer.status">
+                        {{ customer.status }}
+                    </span>
+                </mat-cell>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+                <mat-cell *matCellDef="let customer">
+                    <button mat-icon-button (click)="viewCustomer(customer)" class="action-btn">
+                        <mat-icon>visibility</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="editCustomer(customer)" class="action-btn">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="deleteCustomer(customer)" class="action-btn delete-btn">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+    </div>
+
+    <!-- Pagination and Count in Single Line -->
+    <div class="pagination-count-container">
+        <div class="customer-count">
+            <span class="count-text">Showing {{ paginatedCustomers.length }} of {{ filteredCustomers.length }}
+                customers</span>
+        </div>
+        <mat-paginator [length]="filteredCustomers.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20, 50]"
+            (page)="onPageChange($event)" showFirstLastButtons showPageSizeOptions class="paginator">
+        </mat-paginator>
+    </div>
+
+    <!-- No Results Message -->
+    <div class="no-results" *ngIf="filteredCustomers.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <p>No customers found matching your search criteria.</p>
+    </div>
+</div>
