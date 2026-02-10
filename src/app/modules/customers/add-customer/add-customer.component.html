@@ -1,0 +1,670 @@
+<div class="add-customer-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Add New Customer</h1>
+      <p class="page-subtitle">Fill in the details below to register a new customer</p>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn" [disabled]="isLoading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Stepper -->
+  <mat-stepper linear #stepper class="add-customer-stepper">
+    <!-- Step 1: Customer Details -->
+    <mat-step [stepControl]="customerForm" completed="true">
+      <ng-template matStepLabel>Customer Details</ng-template>
+
+      <div class="step-content">
+        <form [formGroup]="customerForm" class="customer-form">
+          <div class="attachment-section">
+            <div class="form-row">
+              <!-- Name Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Customer Name</mat-label>
+                <input matInput placeholder="Enter customer name" formControlName="name" />
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="customerForm.get('name')?.hasError('required')">Name is required</mat-error>
+                <mat-error *ngIf="customerForm.get('name')?.hasError('minlength')">Minimum 2 characters
+                  required</mat-error>
+              </mat-form-field>
+
+              <!-- Email Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email Address</mat-label>
+                <input matInput placeholder="Enter email address" formControlName="email" />
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="customerForm.get('email')?.hasError('required')">Email is required</mat-error>
+                <mat-error *ngIf="customerForm.get('email')?.hasError('email')">Invalid email format</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <!-- Phone Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Phone Number</mat-label>
+                <input matInput placeholder="Enter 10-digit phone number" formControlName="phone" />
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-error *ngIf="customerForm.get('phone')?.hasError('required')">Phone number is required</mat-error>
+                <mat-error *ngIf="customerForm.get('phone')?.hasError('pattern')">Phone must be 10 digits</mat-error>
+              </mat-form-field>
+
+              <!-- Status Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Status</mat-label>
+                <mat-select formControlName="status">
+                  <mat-option value="active">Active</mat-option>
+                  <mat-option value="inactive">Inactive</mat-option>
+                  <mat-option value="pending">Pending</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>flag</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <!-- Address Field -->
+              <mat-form-field appearance="outline" class="form-field full-width">
+                <mat-label>Address</mat-label>
+                <textarea matInput placeholder="Enter address" formControlName="address" rows="2"></textarea>
+                <mat-icon matPrefix>location_on</mat-icon>
+                <mat-error *ngIf="customerForm.get('address')?.hasError('required')">Address is required</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <!-- City Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>City</mat-label>
+                <input matInput placeholder="Enter city" formControlName="city" />
+                <mat-error *ngIf="customerForm.get('city')?.hasError('required')">City is required</mat-error>
+              </mat-form-field>
+
+              <!-- Zip Code Field -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Zip Code</mat-label>
+                <input matInput placeholder="Enter zip code" formControlName="zipCode" />
+                <mat-error *ngIf="customerForm.get('zipCode')?.hasError('required')">Zip code is required</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <!-- Aadhar Details Section -->
+          <div class="attachment-section">
+            <h4 class="section-title">Aadhar Details</h4>
+            <div class="form-row">
+              <!-- Aadhar Number -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Aadhar Number</mat-label>
+                <input matInput placeholder="Enter 12-digit Aadhar number" formControlName="aadharNumber" />
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="customerForm.get('aadharNumber')?.hasError('required')">Aadhar number is
+                  required</mat-error>
+                <mat-error *ngIf="customerForm.get('aadharNumber')?.hasError('pattern')">Aadhar must be 12
+                  digits</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Aadhar Image Upload -->
+            <div class="file-upload-container">
+              <div class="file-input-wrapper">
+                <input type="file" #aadharInput hidden accept="image/*,.pdf" (change)="onAadharFileSelected($event)" />
+                <button mat-raised-button type="button" (click)="aadharInput.click()" class="upload-btn">
+                  <mat-icon>upload_file</mat-icon>
+                  {{ aadharFile ? 'Change Aadhar Image' : 'Upload Aadhar Image' }}
+                </button>
+              </div>
+
+              <!-- Aadhar Preview -->
+              <div class="preview-container" *ngIf="aadharPreview">
+                <div class="preview-item">
+                  <img [src]="aadharPreview" alt="Aadhar Preview" class="preview-image" />
+                  <button mat-icon-button color="warn" (click)="removeAadharFile()" class="remove-btn" type="button">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PAN Details Section -->
+          <div class="attachment-section">
+            <h4 class="section-title">PAN Details</h4>
+            <div class="form-row">
+              <!-- PAN Number -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>PAN Number</mat-label>
+                <input matInput placeholder="e.g., ABCDE1234F" formControlName="panNumber" />
+                <mat-icon matPrefix>credit_card</mat-icon>
+                <mat-error *ngIf="customerForm.get('panNumber')?.hasError('required')">PAN number is
+                  required</mat-error>
+                <mat-error *ngIf="customerForm.get('panNumber')?.hasError('pattern')">Invalid PAN format</mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- PAN Image Upload -->
+            <div class="file-upload-container">
+              <div class="file-input-wrapper">
+                <input type="file" #panInput hidden accept="image/*,.pdf" (change)="onPanFileSelected($event)" />
+                <button mat-raised-button type="button" (click)="panInput.click()" class="upload-btn">
+                  <mat-icon>upload_file</mat-icon>
+                  {{ panFile ? 'Change PAN Image' : 'Upload PAN Image' }}
+                </button>
+              </div>
+
+              <!-- PAN Preview -->
+              <div class="preview-container" *ngIf="panPreview">
+                <div class="preview-item">
+                  <img [src]="panPreview" alt="PAN Preview" class="preview-image" />
+                  <button mat-icon-button color="warn" (click)="removePanFile()" class="remove-btn" type="button">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other Documents Section -->
+          <div class="attachment-section">
+            <h4 class="section-title">Other Documents</h4>
+            <div class="file-upload-container">
+              <div class="file-input-wrapper">
+                <input type="file" #otherInput hidden accept="image/*,.pdf,.doc,.docx" multiple
+                  (change)="onOtherDocumentSelected($event)" />
+                <button mat-raised-button type="button" (click)="otherInput.click()" class="upload-btn">
+                  <mat-icon>attach_file</mat-icon>
+                  Attach Documents
+                </button>
+              </div>
+
+              <!-- Other Documents Preview -->
+              <div class="preview-container" *ngIf="otherDocuments.length > 0">
+                <div class="preview-item" *ngFor="let doc of otherDocuments; let i = index">
+                  <div class="document-item">
+                    <img [src]="doc.preview" alt="Document Preview" class="preview-image" />
+                    <span class="doc-name">{{ doc.name }}</span>
+                  </div>
+                  <button mat-icon-button color="warn" (click)="removeOtherDocument(i)" class="remove-btn"
+                    type="button">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Step Actions -->
+        <div class="step-actions">
+          <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" (click)="stepper.next()"
+            [disabled]="customerForm.invalid || isLoading">
+            Voice of Service
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- Step 2: Vehicle & Payment Details -->
+    <mat-step [stepControl]="vehiclesForm">
+      <ng-template matStepLabel>Vehicles & Payment</ng-template>
+
+      <div class="step-content">
+        <form [formGroup]="vehiclesForm">
+          <!-- Vehicles List -->
+          <div formArrayName="vehicles">
+            <div *ngFor="let vehicle of vehiclesArray.controls; let i = index" class="vehicle-card">
+              <div class="vehicle-card-header">
+                <h3>
+                  <mat-icon>two_wheeler</mat-icon>
+                  Vehicle {{ i + 1 }}
+                </h3>
+                <button mat-icon-button color="warn" type="button" (click)="removeVehicle(i)"
+                  [disabled]="vehiclesArray.length <= 1" class="remove-vehicle-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+
+              <div [formGroupName]="i">
+                <!-- Vehicle Details Section -->
+                <div class="section-header">Vehicle Details</div>
+
+                <div class="form-row">
+                  <!-- Bike Model Dropdown -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Bike Model</mat-label>
+                    <mat-select formControlName="bikeModel">
+                      <mat-option *ngFor="let model of bikeModels" [value]="model.value">
+                        {{ model.name }}
+                      </mat-option>
+                    </mat-select>
+                    <mat-icon matPrefix>two_wheeler</mat-icon>
+                    <mat-error *ngIf="vehicle.get('bikeModel')?.hasError('required')">Bike model is required</mat-error>
+                  </mat-form-field>
+
+                  <!-- Manufacturer Field (Auto-populated, readonly) -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Manufacturer</mat-label>
+                    <input matInput formControlName="manufacturer" readonly />
+                    <mat-icon matPrefix>business</mat-icon>
+                    <mat-hint>Auto-populated based on bike model</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <!-- Registration Number -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Registration Number</mat-label>
+                    <input matInput placeholder="e.g., DL01AB1234" formControlName="registrationNumber" />
+                    <mat-icon matPrefix>confirmation_number</mat-icon>
+                    <mat-error *ngIf="vehicle.get('registrationNumber')?.hasError('required')">Registration number is
+                      required</mat-error>
+                  </mat-form-field>
+
+                  <!-- Purchase Date -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Purchase Date</mat-label>
+                    <input matInput type="date" formControlName="purchaseDate" />
+                    <mat-icon matPrefix>calendar_today</mat-icon>
+                    <mat-error *ngIf="vehicle.get('purchaseDate')?.hasError('required')">Purchase date is
+                      required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <!-- Engine Number -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Engine Number</mat-label>
+                    <input matInput placeholder="Enter engine number" formControlName="engineNumber" />
+                    <mat-error *ngIf="vehicle.get('engineNumber')?.hasError('required')">Engine number is
+                      required</mat-error>
+                  </mat-form-field>
+
+                  <!-- Chassis Number -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Chassis Number</mat-label>
+                    <input matInput placeholder="Enter chassis number" formControlName="chassisNumber" />
+                    <mat-error *ngIf="vehicle.get('chassisNumber')?.hasError('required')">Chassis number is
+                      required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <!-- Battery Number -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Battery Number</mat-label>
+                    <input matInput placeholder="Enter Battery number" formControlName="batteryNumber" />
+                    <mat-error *ngIf="vehicle.get('batteryNumber')?.hasError('required')">Battery number is
+                      required</mat-error>
+                  </mat-form-field>
+
+                  <!-- Charger Number -->
+                  <mat-form-field appearance="outline" class="form-field">
+                    <mat-label>Charger Number</mat-label>
+                    <input matInput placeholder="Enter charger number" formControlName="chargerNumber" />
+                    <mat-error *ngIf="vehicle.get('chargerNumber')?.hasError('required')">Charger number is
+                      required</mat-error>
+                  </mat-form-field>
+                </div>
+
+                <!-- Ecommerce Platform Section -->
+                <div class="ecommerce-section">
+                  <div class="section-title">
+                    <mat-icon>shopping_cart</mat-icon>
+                    Ordered from Ecommerce Platform
+                  </div>
+
+                  <!-- Radio Button Group -->
+                  <div class="radio-group">
+                    <mat-radio-group formControlName="orderedFromEcommerce" class="radio-options">
+                      <mat-radio-button value="yes" class="radio-button">
+                        <span class="radio-label">Yes</span>
+                      </mat-radio-button>
+                      <mat-radio-button value="no" class="radio-button">
+                        <span class="radio-label">No</span>
+                      </mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+
+                  <!-- Conditional Fields (shown when "Yes" is selected) -->
+                  <div *ngIf="vehicle.get('orderedFromEcommerce')?.value === 'yes'" class="conditional-fields">
+                    <div class="form-row">
+                      <!-- Ecommerce Platform Dropdown -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Ecommerce Platform</mat-label>
+                        <mat-select formControlName="ecommercePlatform">
+                          <mat-option value="flipkart">Flipkart</mat-option>
+                          <mat-option value="amazon">Amazon</mat-option>
+                          <mat-option value="happily">Happily</mat-option>
+                          <mat-option value="olx">OLX</mat-option>
+                          <mat-option value="swappa">Swappa</mat-option>
+                          <mat-option value="quikr">Quikr</mat-option>
+                        </mat-select>
+                        <mat-icon matPrefix>store</mat-icon>
+                        <mat-error *ngIf="vehicle.get('ecommercePlatform')?.hasError('required')">Platform is
+                          required</mat-error>
+                      </mat-form-field>
+
+                      <!-- Order ID -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Order ID</mat-label>
+                        <input matInput placeholder="Enter order ID" formControlName="orderId" />
+                        <mat-icon matPrefix>receipt_long</mat-icon>
+                        <mat-error *ngIf="vehicle.get('orderId')?.hasError('required')">Order ID is required</mat-error>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="form-row">
+                      <!-- Ordered Date -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Ordered Date</mat-label>
+                        <input matInput type="date" formControlName="orderedDate" />
+                        <mat-icon matPrefix>calendar_today</mat-icon>
+                        <mat-error *ngIf="vehicle.get('orderedDate')?.hasError('required')">Ordered date is
+                          required</mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Payment Details Section -->
+                <div class="payment-section">
+                  <div class="section-header">Payment Details</div>
+
+                  <div class="form-row">
+                    <!-- Payment Type -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Payment Type</mat-label>
+                      <mat-select formControlName="paymentType">
+                        <mat-option value="cash">Cash</mat-option>
+                        <mat-option value="creditCard">Credit Card</mat-option>
+                        <mat-option value="debitCard">Debit Card</mat-option>
+                        <mat-option value="cheque">Cheque</mat-option>
+                        <mat-option value="upi">UPI</mat-option>
+                        <mat-option value="bankTransfer">Bank Transfer</mat-option>
+                      </mat-select>
+                      <mat-icon matPrefix>payment</mat-icon>
+                      <mat-error *ngIf="vehicle.get('paymentType')?.hasError('required')">Payment type is
+                        required</mat-error>
+                    </mat-form-field>
+
+                    <!-- Vehicle Price -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Vehicle Price</mat-label>
+                      <input matInput type="number" step="0.01" placeholder="Enter vehicle price"
+                        formControlName="vehiclePrice" />
+                      <mat-icon matPrefix>directions_bike</mat-icon>
+                      <mat-error *ngIf="vehicle.get('vehiclePrice')?.hasError('required')">Vehicle price is
+                        required</mat-error>
+                      <mat-error *ngIf="vehicle.get('vehiclePrice')?.hasError('pattern')">Enter a valid
+                        price</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-row">
+                    <!-- GST Price -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>GST Price</mat-label>
+                      <input matInput type="number" step="0.01" placeholder="Enter GST price"
+                        formControlName="gstPrice" />
+                      <mat-icon matPrefix>receipt</mat-icon>
+                      <mat-error *ngIf="vehicle.get('gstPrice')?.hasError('required')">GST price is required</mat-error>
+                      <mat-error *ngIf="vehicle.get('gstPrice')?.hasError('pattern')">Enter a valid price</mat-error>
+                    </mat-form-field>
+
+                    <!-- Extra Fitting Price -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Extra Fitting Price</mat-label>
+                      <input matInput type="number" step="0.01" placeholder="Enter extra fitting price"
+                        formControlName="extraFittingPrice" />
+                      <mat-icon matPrefix>build</mat-icon>
+                      <mat-error *ngIf="vehicle.get('extraFittingPrice')?.hasError('required')">Extra fitting price is
+                        required</mat-error>
+                      <mat-error *ngIf="vehicle.get('extraFittingPrice')?.hasError('pattern')">Enter a valid
+                        price</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-row">
+                    <!-- Miscellaneous Charges -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Miscellaneous Charges</mat-label>
+                      <input matInput type="number" step="0.01" placeholder="Enter miscellaneous charges"
+                        formControlName="miscellaneousCharges" />
+                      <mat-icon matPrefix>more_horiz</mat-icon>
+                      <mat-error *ngIf="vehicle.get('miscellaneousCharges')?.hasError('required')">Miscellaneous charges
+                        is required</mat-error>
+                      <mat-error *ngIf="vehicle.get('miscellaneousCharges')?.hasError('pattern')">Enter a valid
+                        price</mat-error>
+                    </mat-form-field>
+
+                    <!-- Discount Price -->
+                    <mat-form-field appearance="outline" class="form-field">
+                      <mat-label>Discount Price</mat-label>
+                      <input matInput type="number" step="0.01" placeholder="Enter discount amount"
+                        formControlName="discountPrice" />
+                      <mat-icon matPrefix>local_offer</mat-icon>
+                      <mat-error *ngIf="vehicle.get('discountPrice')?.hasError('required')">Discount price is
+                        required</mat-error>
+                      <mat-error *ngIf="vehicle.get('discountPrice')?.hasError('pattern')">Enter a valid
+                        price</mat-error>
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Price Summary Section -->
+                  <div class="price-summary-section">
+                    <div class="price-row">
+                      <span class="price-label">Total Price (Before Discount):</span>
+                      <span class="price-value">₹ {{ calculateVehicleTotal(i) | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="price-row">
+                      <span class="price-label">Discount Amount:</span>
+                      <span class="price-value discount-value">- ₹ {{ vehicle.get('discountPrice')?.value || 0 |
+                        number:'1.2-2' }}</span>
+                    </div>
+                    <div class="price-row final-price-row">
+                      <span class="final-price-label">Vehicle Total:</span>
+                      <span class="final-price-value">₹ {{ calculateVehicleFinalPrice(i) | number:'1.2-2' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Vehicle Button -->
+          <div class="add-vehicle-section">
+            <button mat-raised-button type="button" (click)="addVehicle()" class="add-vehicle-btn">
+              <mat-icon>add_circle</mat-icon>
+              Add Another Vehicle
+            </button>
+          </div>
+
+          <!-- Grand Total Section -->
+          <div class="grand-total-section">
+            <div class="grand-total-row">
+              <span class="grand-total-label">Grand Total (All Vehicles):</span>
+              <span class="grand-total-value">₹ {{ calculateGrandTotal() | number:'1.2-2' }}</span>
+            </div>
+          </div>
+        </form>
+
+        <!-- Step Actions -->
+        <div class="step-actions">
+          <button mat-stroked-button (click)="stepper.previous()" [disabled]="isLoading">
+            Back
+          </button>
+          <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" (click)="stepper.next()"
+            [disabled]="vehiclesForm.invalid || isLoading" class="submit-btn">
+            <span>Review Details</span>
+          </button>
+        </div>
+      </div>
+    </mat-step>
+
+    <!-- Step 3: Review Details -->
+    <mat-step>
+      <ng-template matStepLabel>Review Details</ng-template>
+
+      <div class="step-content">
+        <!-- Customer Details Section -->
+        <div class="review-section">
+          <h3 class="review-section-title">
+            <mat-icon>person</mat-icon>
+            Customer Details
+          </h3>
+          <div class="review-grid">
+            <div class="review-item">
+              <span class="review-label">Customer Name:</span>
+              <span class="review-value">{{ customerForm.get('name')?.value }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Email Address:</span>
+              <span class="review-value">{{ customerForm.get('email')?.value }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Phone Number:</span>
+              <span class="review-value">{{ customerForm.get('phone')?.value }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Status:</span>
+              <span class="review-value">{{ customerForm.get('status')?.value | titlecase }}</span>
+            </div>
+            <div class="review-item full-width">
+              <span class="review-label">Address:</span>
+              <span class="review-value">{{ customerForm.get('address')?.value }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">City:</span>
+              <span class="review-value">{{ customerForm.get('city')?.value }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Zip Code:</span>
+              <span class="review-value">{{ customerForm.get('zipCode')?.value }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vehicles & Payment Details Section -->
+        <div class="review-section" *ngFor="let vehicle of vehiclesArray.value; let i = index">
+          <h3 class="review-section-title">
+            <mat-icon>two_wheeler</mat-icon>
+            Vehicle {{ i + 1 }} Details & Payment
+          </h3>
+          <div class="review-grid">
+            <!-- Vehicle Details -->
+            <div class="review-item">
+              <span class="review-label">Bike Model:</span>
+              <span class="review-value">{{ vehicle.bikeModel }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Manufacturer:</span>
+              <span class="review-value">{{ vehicle.manufacturer }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Registration Number:</span>
+              <span class="review-value">{{ vehicle.registrationNumber }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Purchase Date:</span>
+              <span class="review-value">{{ vehicle.purchaseDate }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Engine Number:</span>
+              <span class="review-value">{{ vehicle.engineNumber }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Chassis Number:</span>
+              <span class="review-value">{{ vehicle.chassisNumber }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Battery Number:</span>
+              <span class="review-value">{{ vehicle.batteryNumber }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Charger Number:</span>
+              <span class="review-value">{{ vehicle.chargerNumber }}</span>
+            </div>
+
+            <!-- Ecommerce Details (if applicable) -->
+            <div class="review-item" *ngIf="vehicle.orderedFromEcommerce === 'yes'">
+              <span class="review-label">Ordered from Ecommerce:</span>
+              <span class="review-value">{{ vehicle.orderedFromEcommerce | titlecase }}</span>
+            </div>
+            <div class="review-item" *ngIf="vehicle.orderedFromEcommerce === 'yes'">
+              <span class="review-label">Platform:</span>
+              <span class="review-value">{{ vehicle.ecommercePlatform | titlecase }}</span>
+            </div>
+            <div class="review-item" *ngIf="vehicle.orderedFromEcommerce === 'yes'">
+              <span class="review-label">Order ID:</span>
+              <span class="review-value">{{ vehicle.orderId }}</span>
+            </div>
+            <div class="review-item" *ngIf="vehicle.orderedFromEcommerce === 'yes'">
+              <span class="review-label">Ordered Date:</span>
+              <span class="review-value">{{ vehicle.orderedDate }}</span>
+            </div>
+
+            <!-- Payment Details -->
+            <div class="review-item">
+              <span class="review-label">Payment Type:</span>
+              <span class="review-value">{{ vehicle.paymentType | titlecase }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Vehicle Price:</span>
+              <span class="review-value">₹ {{ vehicle.vehiclePrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">GST Price:</span>
+              <span class="review-value">₹ {{ vehicle.gstPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Extra Fitting Price:</span>
+              <span class="review-value">₹ {{ vehicle.extraFittingPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Miscellaneous Charges:</span>
+              <span class="review-value">₹ {{ vehicle.miscellaneousCharges | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item">
+              <span class="review-label">Discount Price:</span>
+              <span class="review-value discount-review-value">- ₹ {{ vehicle.discountPrice | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item total-review-item">
+              <span class="review-label total-review-label">Total (Before Discount):</span>
+              <span class="review-value total-review-value">₹ {{ calculateVehicleTotal(i) | number:'1.2-2' }}</span>
+            </div>
+            <div class="review-item final-total-review-item">
+              <span class="review-label final-total-review-label">Vehicle Total:</span>
+              <span class="review-value final-total-review-value">₹ {{ calculateVehicleFinalPrice(i) | number:'1.2-2'
+                }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grand Total Section -->
+        <div class="grand-total-review-section">
+          <div class="grand-total-review-row">
+            <span class="grand-total-review-label">Grand Total (All Vehicles):</span>
+            <span class="grand-total-review-value">₹ {{ calculateGrandTotal() | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <!-- Step Actions -->
+        <div class="step-actions">
+          <button mat-stroked-button (click)="stepper.previous()" [disabled]="isLoading">
+            Back
+          </button>
+          <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading" class="submit-btn">
+            <mat-spinner diameter="20" *ngIf="isLoading" class="loading-spinner"></mat-spinner>
+            <span *ngIf="!isLoading">Confirm & Add Customer</span>
+          </button>
+        </div>
+      </div>
+    </mat-step>

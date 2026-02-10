@@ -1,16 +1,14 @@
 <div class="customers-container">
-    <!-- Header Section -->
-    <div class="header-section">
-        <div class="header-left">
-            <h1 class="page-title">Customers</h1>
-            <p class="total-customers">Total Customers: <span class="count">{{ totalCustomers }}</span></p>
+    <!-- Header Section -->  
+    <div class="inventory-header">
+        <div class="header-content">
+        <h1 class="page-title">Customers Management</h1>
+        <p class="page-subtitle">Manage customer profiles and service history.</p>
         </div>
-        <div class="header-right">
-            <button mat-raised-button color="primary" class="add-customer-btn" (click)="openAddCustomerDialog()">
-                <mat-icon>add</mat-icon>
-                Add Customer
-            </button>
-        </div>
+        <button mat-raised-button color="primary" class="add-customer-btn" (click)="openAddCustomerDialog()">
+        <mat-icon>add</mat-icon>
+        Add New Customer
+        </button>
     </div>
 
     <!-- Customer Stats Cards -->

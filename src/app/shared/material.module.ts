@@ -17,8 +17,12 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatRadioModule } from '@angular/material/radio';
 import { NgChartsModule } from 'ng2-charts';
 import { MatSortModule } from '@angular/material/sort';
+
 @NgModule({
   exports: [
     MatToolbarModule,
@@ -37,8 +41,11 @@ import { MatSortModule } from '@angular/material/sort';
     MatSelectModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
     NgChartsModule,
-    MatSortModule
+    MatSortModule,
+    MatStepperModule,
+    MatRadioModule
   ]
 })
 export class MaterialModule { }

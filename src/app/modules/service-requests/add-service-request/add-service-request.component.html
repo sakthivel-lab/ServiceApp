@@ -1,0 +1,310 @@
+<div class="add-service-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Add New Service Request</h1>
+      <p class="page-subtitle">Fill in the details below to add a new service request</p>
+    </div>
+    <button mat-icon-button (click)="onCancel()" class="close-btn" [disabled]="isLoading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-container">
+      <h3 class="search-title">Search Customer</h3>
+      <div class="search-form">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Enter Customer ID, Phone Number, or Email</mat-label>
+          <input matInput placeholder="Search customer..." [(ngModel)]="searchQuery" (keyup.enter)="searchCustomer()"
+            [disabled]="isSearching" />
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="searchCustomer()"
+          [disabled]="!searchQuery?.trim() || isSearching" class="search-btn">
+          <mat-spinner diameter="20" *ngIf="isSearching" class="search-spinner"></mat-spinner>
+          <span *ngIf="!isSearching">Search</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results" *ngIf="searchPerformed">
+    <!--<div class="result-container" *ngIf="customerFound; else noCustomerFound">-->
+    <!-- Stepper -->
+    <mat-stepper linear #stepper class="add-service-stepper"
+      *ngIf="customerFound && foundCustomer; else noCustomerFound">
+      <!-- Step 1: Customer Details -->
+      <mat-step completed="true">
+        <ng-template matStepLabel>Customer & Vehicle Details</ng-template>
+
+        <div class="step-content-wrapper">
+          <!-- Customer Information Section -->
+          <div class="customer-info-section" *ngIf="customerFound && foundCustomer">
+            <div class="customer-card">
+              <div class="customer-header">
+                <mat-icon class="customer-icon">person</mat-icon>
+                <h3 class="customer-title">Customer Information</h3>
+              </div>
+              <div class="customer-details-grid">
+                <div class="customer-detail-item">
+                  <span class="detail-label">Customer ID:</span>
+                  <span class="detail-value">{{foundCustomer.id}}</span>
+                </div>
+                <div class="customer-detail-item">
+                  <span class="detail-label">Name:</span>
+                  <span class="detail-value">{{foundCustomer.name}}</span>
+                </div>
+                <div class="customer-detail-item">
+                  <span class="detail-label">Phone:</span>
+                  <span class="detail-value">{{foundCustomer.phone}}</span>
+                </div>
+                <div class="customer-detail-item">
+                  <span class="detail-label">Email:</span>
+                  <span class="detail-value">{{foundCustomer.email}}</span>
+                </div>
+                <div class="customer-detail-item full-width">
+                  <span class="detail-label">Address:</span>
+                  <span class="detail-value">{{foundCustomer.address}}</span>
+                </div>
+              </div>
+              <div class="customer-actions">
+                <button mat-stroked-button (click)="resetSearch()" class="change-customer-btn">
+                  <mat-icon>refresh</mat-icon>
+                  Change Customer
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Vehicle Selection Section -->
+          <div class="vehicle-selection-section"
+            *ngIf="foundCustomer && foundCustomer.vehicles && foundCustomer.vehicles.length > 0">
+            <h5 class="vehicle-selection-title">
+              <mat-icon>directions_car</mat-icon>
+              Select Vehicle for Service
+            </h5>
+            <div class="vehicle-list">
+              <div class="vehicle-item" *ngFor="let vehicle of foundCustomer.vehicles; let i = index"
+                [class.selected]="selectedVehicle?.id === vehicle.id">
+                <mat-radio-group class="vehicle-radio-group">
+                  <mat-radio-button [value]="vehicle.id" [checked]="selectedVehicle?.id === vehicle.id"
+                    (change)="onVehicleSelected(vehicle)" class="vehicle-radio">
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div class="vehicle-info" (click)="onVehicleSelected(vehicle)">
+                  <div class="vehicle-header">
+                    <span class="vehicle-make-model">{{vehicle.year}} {{vehicle.make}} {{vehicle.model}}</span>
+                    <span class="vehicle-type">{{vehicle.type}}</span>
+                  </div>
+                  <div class="vehicle-details">
+                    <div class="vehicle-detail">
+                      <mat-icon>badge</mat-icon>
+                      <span>{{vehicle.licensePlate}}</span>
+                    </div>
+                    <div class="vehicle-detail">
+                      <mat-icon>color_lens</mat-icon>
+                      <span>{{vehicle.color}}</span>
+                    </div>
+                    <div class="vehicle-detail">
+                      <mat-icon>pin</mat-icon>
+                      <span>{{vehicle.vin}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="selected-vehicle-summary" *ngIf="selectedVehicle">
+                <mat-icon class="selected-icon">check_circle</mat-icon>
+                <span class="selected-text">Selected: {{getSelectedVehicleDisplay()}}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-vehicles-message"
+            *ngIf="foundCustomer && (!foundCustomer.vehicles || foundCustomer.vehicles.length === 0)">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            <p>No vehicles found for this customer. Please add a vehicle first.</p>
+          </div>
+
+          <!-- Step Actions -->
+          <div class="step-actions">
+            <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+              Cancel
+            </button>
+            <button mat-raised-button color="primary" (click)="stepper.next()"
+              [disabled]="!selectedVehicle || isLoading" class="submit-btn">
+              <span>Next Step</span>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+      <!-- Step 2: Service Details-->
+      <mat-step>
+        <ng-template matStepLabel>Service Details</ng-template>
+
+        <div class="step-content">
+          <!-- Job Card for Selected Vehicle -->
+          <div class="job-card-section" *ngIf="selectedVehicle">
+            <div class="job-card">
+              <div class="job-card-header">
+                <mat-icon class="job-icon">build</mat-icon>
+                <h3 class="job-title">Job Details</h3>
+              </div>
+              <div class="job-vehicle-info">
+                <div class="job-vehicle-header">
+                  <mat-icon class="job-vehicle-icon">directions_car</mat-icon>
+                  <h4 class="job-vehicle-title">Selected Vehicle</h4>
+                </div>
+                <div class="job-vehicle-details">
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Vehicle:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.year}} {{selectedVehicle.make}}
+                      {{selectedVehicle.model}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">License Plate:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.licensePlate}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Color:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.color}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Type:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.type}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">VIN:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.vin}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Motor Serial no:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.motorSerialNo}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Battery Serial no:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.batterySerialNo}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Charger Serial No:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.chargerSerialNo}}</span>
+                  </div>
+                  <div class="job-vehicle-item">
+                    <span class="job-vehicle-label">Controller Serial No:</span>
+                    <span class="job-vehicle-value">{{selectedVehicle.controllerSerialNo}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="no-vehicle-selected-message" *ngIf="!selectedVehicle">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            <p>Please select a vehicle from Step 1 to continue with service details.</p>
+          </div>
+        </div>
+        <!-- Step Actions -->
+        <div class="step-actions">
+          <button mat-stroked-button (click)="stepper.previous()" [disabled]="isLoading">
+            Back
+          </button>
+          <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+            Cancel
+          </button>
+          <button mat-raised-button color="primary" (click)="stepper.next()" [disabled]="
+            isLoading" class="submit-btn">
+            <span>Review Details</span>
+          </button>
+        </div>
+      </mat-step>
+      <!-- Step 3: Review & Confirm -->
+      <mat-step>
+        <ng-template matStepLabel>Review & Confirm</ng-template>
+
+        <div class="step-content">
+          <div class="review-section">
+            <h3 class="review-title">
+              <mat-icon>check_circle</mat-icon>
+              service Item Details
+            </h3>
+
+            <div class="review-grid">
+              <div class="review-item">
+                <span class="review-label">Barcode:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">SKU:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item full-width">
+                <span class="review-label">Part Name:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Category:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Quantity:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item">
+                <span class="review-label">Location:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item full-width">
+                <span class="review-label">Base Price:</span>
+                <span class="review-value"></span>
+              </div>
+
+              <!-- GST Details -->
+              <div class="review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
+                <span class="review-label">SGST:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
+                <span class="review-label">CGST:</span>
+                <span class="review-value"></span>
+              </div>
+              <div class="review-item total-review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
+                <span class="review-label total-review-label">Total (with GST):</span>
+                <span class="review-value total-review-value"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step Actions -->
+          <div class="step-actions">
+            <button mat-stroked-button (click)="stepper.previous()" [disabled]="isLoading">
+              Back
+            </button>
+            <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading">
+              Cancel
+            </button>
+            <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="isLoading" class="submit-btn">
+              <mat-spinner diameter="20" *ngIf="isLoading" class="loading-spinner"></mat-spinner>
+              <span *ngIf="!isLoading">Confirm & Add Item</span>
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-stepper>
+    <!--</div>-->
+    <ng-template #noCustomerFound>
+      <div class="no-customer-found">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h4>No Customer Found</h4>
+        <p>No customer record found with the provided search criteria.</p>
+        <button mat-raised-button color="accent" (click)="addNewCustomer()" class="add-customer-btn">
+          <mat-icon>person_add</mat-icon>
+          Add New Customer
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+</div>

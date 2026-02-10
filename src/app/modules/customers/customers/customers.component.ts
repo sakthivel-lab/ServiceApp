@@ -4,8 +4,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ManufacturerDetailsDialogComponent } from './manufacturer-details-dialog/manufacturer-details-dialog.component';
-
+import { Router } from '@angular/router';
+import { ManufacturerDetailsDialogComponent } from '../manufacturer-details-dialog/manufacturer-details-dialog.component';
+import { AddCustomerComponent } from '../add-customer/add-customer.component';
 export interface Customer {
   id: number;
   name: string;
@@ -91,7 +92,8 @@ export class CustomersComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -258,10 +260,34 @@ export class CustomersComponent implements OnInit {
 
   // CRUD operations
   openAddCustomerDialog(): void {
-    // TODO: Implement add customer dialog
-    this.snackBar.open('Add Customer dialog - To be implemented', 'Close', {
-      duration: 3000
+   /* const dialogRef = this.dialog.open(AddCustomerComponent, {
+      width: '600px',
+      maxHeight: '90vh',
+      disableClose: false
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Add new customer to the list
+        const newCustomer: Customer = {
+          id: Math.max(...this.allCustomers.map(c => c.id)) + 1,
+          name: result.name,
+          email: result.email,
+          phone: result.phone,
+          bikeModel: result.bikeModel,
+          status: result.status,
+          registrationDate: new Date()
+        };
+
+        this.allCustomers.push(newCustomer);
+        this.applyFilters();
+        this.updateStatistics();
+        this.snackBar.open(`${newCustomer.name} added successfully`, 'Close', {
+          duration: 3000
+        });
+      }
+    });*/
+    this.router.navigate(['/customers/addCustomer']);
   }
 
   viewCustomer(customer: Customer): void {

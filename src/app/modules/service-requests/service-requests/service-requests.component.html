@@ -1,1 +1,193 @@
-<p>service-requests works!</p>
+<div class="service-requests-page">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">Service Requests</h1>
+      <p class="dashboard-subtitle">Manage requests, warranties and maintenance</p>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button class="refresh-btn" (click)="refreshList()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-icon-button class="filter-btn">
+        <mat-icon>filter_list</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-container">
+    <div class="stats-grid">
+      <mat-card class="stat-card pending-requests">
+        <div class="stat-content-inline">
+          <div class="stat-left">
+            <div class="stat-label">Pending Requests</div>
+            <div class="stat-number">24</div>
+          </div>
+          <div class="stat-right">
+            <div class="stat-badge">+2<br/><small>new</small></div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card urgent-repairs">
+        <div class="stat-content-inline">
+          <div class="stat-left">
+            <div class="stat-label">Urgent Repairs</div>
+            <div class="stat-number">5</div>
+          </div>
+          <div class="stat-right">
+            <div class="stat-badge urgent">+1<br/><small>urgent</small></div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card completed-today">
+        <div class="stat-content-inline">
+          <div class="stat-left">
+            <div class="stat-label">Completed Today</div>
+            <div class="stat-number">12</div>
+          </div>
+          <div class="stat-right">
+            <div class="stat-badge positive">+4<br/><small>completed</small></div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="stat-card revenue-est">
+        <div class="stat-content-inline">
+          <div class="stat-left">
+            <div class="stat-label">Revenue (Est)</div>
+            <div class="stat-number">₹3,240</div>
+          </div>
+          <div class="stat-right">
+            <mat-icon>currency_rupee</mat-icon>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Tabs & actions -->
+  <div class="requests-actions-row">
+    <div class="tabs">
+      <button mat-button class="tab" [class.active]="activeTab==='all'" (click)="setTab('all')">All Requests</button>
+      <button mat-button class="tab" [class.active]="activeTab==='warranty'" (click)="setTab('warranty')">Warranty</button>
+      <button mat-button class="tab" [class.active]="activeTab==='maintenance'" (click)="setTab('maintenance')">Maintenance</button>
+    </div>
+
+    <div class="actions">
+   <mat-form-field appearance="outline" class="status-select">
+        <mat-label>All Status</mat-label>
+        <mat-select (selectionChange)="onStatusChange($event.value)" [value]="selectedStatus">
+          <mat-option value="all">All Status</mat-option>
+          <mat-option value="Open">Open</mat-option>
+          <mat-option value="In Progress">In Progress</mat-option>
+          <mat-option value="Completed">Completed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button class="export-btn">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+
+      <button mat-flat-button color="primary" class="new-request-btn" (click)="createNewRequest()">
+        <mat-icon>add</mat-icon>
+        New Request
+      </button>
+    </div>
+  </div>
+
+  <!-- Mat table (inventory style) -->
+  <div class="table-container">
+    <table mat-table [dataSource]="dataSource" class="inventory-table">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+      </ng-container>
+
+      <!-- Customer Column -->
+      <ng-container matColumnDef="customer">
+        <th mat-header-cell *matHeaderCellDef>CUSTOMER</th>
+        <td mat-cell *matCellDef="let element">
+          <div class="customer-cell">
+            <ng-container *ngIf="element.avatar; else initialsTpl">
+              <img [src]="element.avatar" alt="avatar" class="avatar small"/>
+            </ng-container>
+            <ng-template #initialsTpl>
+              <div class="avatar initials">{{element.initials}}</div>
+            </ng-template>
+            <div class="customer-info">
+              <div class="customer-name">{{ element.name }}</div>
+              <div class="customer-email">{{ element.email }}</div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Model Column -->
+      <ng-container matColumnDef="model">
+        <th mat-header-cell *matHeaderCellDef>MODEL</th>
+        <td mat-cell *matCellDef="let element">{{ element.model }}</td>
+      </ng-container>
+
+      <!-- Issue Column -->
+      <ng-container matColumnDef="issue">
+        <th mat-header-cell *matHeaderCellDef>ISSUE TYPE</th>
+        <td mat-cell *matCellDef="let element">{{ element.issue }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>STATUS</th>
+        <td mat-cell *matCellDef="let element">
+          <span class="status-badge" [ngClass]="{'in-progress': element.status==='In Progress', 'completed': element.status==='Completed', 'open': element.status==='Open'}">{{ element.status }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>ACTIONS</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button aria-label="view" (click)="viewRequest(element.id)"><mat-icon>visibility</mat-icon></button>
+          <button mat-icon-button aria-label="edit" (click)="editRequest(element.id)"><mat-icon>edit</mat-icon></button>
+          <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="viewRequest(element.id)"><mat-icon>visibility</mat-icon><span>View</span></button>
+            <button mat-menu-item (click)="editRequest(element.id)"><mat-icon>edit</mat-icon><span>Edit</span></button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+
+    <!-- Pagination (static placeholder like inventory) -->
+   
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ currentPage * pageSize + 1 }} to {{ Math.min((currentPage + 1) * pageSize, totalItems) }} of {{ totalItems }} parts
+      </div>
+      <div class="pagination-controls">
+        <button mat-icon-button [disabled]="currentPage === 0" (click)="currentPage = Math.max(0, currentPage - 1)">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button mat-mini-fab *ngFor="let page of [1, 2, 3]" 
+          [class.active]="page - 1 === currentPage"
+          (click)="currentPage = page - 1">
+          {{ page }}
+        </button>
+        <span class="pagination-dots">...</span>
+        <button mat-mini-fab (click)="currentPage = 23">24</button>
+        <button mat-icon-button (click)="currentPage = Math.min(45, currentPage + 1)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
