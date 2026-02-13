@@ -115,7 +115,8 @@
                   </div>
                 </div>
               </div>
-
+            </div>
+            <div class="vehicle-list">
               <div class="selected-vehicle-summary" *ngIf="selectedVehicle">
                 <mat-icon class="selected-icon">check_circle</mat-icon>
                 <span class="selected-text">Selected: {{getSelectedVehicleDisplay()}}</span>
@@ -201,6 +202,197 @@
             </div>
           </div>
 
+          <!-- Service Form -->
+          <div class="service-form-section" *ngIf="selectedVehicle">
+            <div class="service-form-card">
+              <div class="service-form-header">
+                <mat-icon class="service-form-icon">build</mat-icon>
+                <h4 class="service-form-title">Service Details</h4>
+              </div>
+              <form [formGroup]="serviceForm">
+                <!-- Service Type Radio Group -->
+                <div class="service-type-section">
+                  <h5 class="section-title">Service Type</h5>
+                  <mat-radio-group class="service-type-group" formControlName="serviceType">
+                    <mat-radio-button value="general" class="service-type-radio">
+                      <span class="service-type-label">General Service</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="free" class="service-type-radio">
+                      <span class="service-type-label">Free Service</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="paid" class="service-type-radio">
+                      <span class="service-type-label">Paid Service</span>
+                    </mat-radio-button>
+                  </mat-radio-group>
+                </div>
+                <!-- Problem Type Section -->
+                <div class="problem-type-section">
+                  <h5 class="section-title">Problem Type</h5>
+                  <div class="problem-type-grid">
+                    <!-- Charger Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="chargerProblem"
+                        (change)="onProblemTypeChange('charger', $event.checked)">
+                        <span class="problem-label">Charger Problem</span>
+                      </mat-checkbox>
+                      <mat-form-field appearance="outline" class="problem-dropdown"
+                        *ngIf="serviceForm.get('chargerProblem')?.value">
+                        <mat-label>Charger Problem Type</mat-label>
+                        <mat-select formControlName="chargerProblemType">
+                          <mat-option value="noPower">No Power</mat-option>
+                          <mat-option value="slowCharging">Slow Charging</mat-option>
+                          <mat-option value="overheating">Overheating</mat-option>
+                          <mat-option value="faultyCable">Faulty Cable</mat-option>
+                          <mat-option value="indicatorLight">Indicator Light On</mat-option>
+                          <mat-option value="others">Others</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="problem-details"
+                        *ngIf="serviceForm.get('chargerProblem')?.value && serviceForm.get('chargerProblemType')?.value === 'others'">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Charger Problem Description</mat-label>
+                          <input matInput placeholder="Describe the charger problem..."
+                            formControlName="chargerProblemDescription" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                    <!-- Battery Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="batteryProblem"
+                        (change)="onProblemTypeChange('battery', $event.checked)">
+                        <span class="problem-label">Battery Problem</span>
+                      </mat-checkbox>
+                      <mat-form-field appearance="outline" class="problem-dropdown"
+                        *ngIf="serviceForm.get('batteryProblem')?.value">
+                        <mat-label>Battery Problem Type</mat-label>
+                        <mat-select formControlName="batteryProblemType">
+                          <mat-option value="deadBattery">Dead Battery</mat-option>
+                          <mat-option value="weakBattery">Weak Battery</mat-option>
+                          <mat-option value="corrosion">Corrosion</mat-option>
+                          <mat-option value="badCells">Bad Cells</mat-option>
+                          <mat-option value="others">Others</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="problem-details"
+                        *ngIf="serviceForm.get('batteryProblem')?.value && serviceForm.get('batteryProblemType')?.value === 'others'">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Battery Problem Description</mat-label>
+                          <input matInput placeholder="Describe the battery problem..."
+                            formControlName="batteryProblemDescription" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Motor Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="motorProblem"
+                        (change)="onProblemTypeChange('motor', $event.checked)">
+                        <span class="problem-label">Motor Problem</span>
+                      </mat-checkbox>
+                      <mat-form-field appearance="outline" class="problem-dropdown"
+                        *ngIf="serviceForm.get('motorProblem')?.value">
+                        <mat-label>Motor Problem Type</mat-label>
+                        <mat-select formControlName="motorProblemType">
+                          <mat-option value="startingIssue">Starting Issue</mat-option>
+                          <mat-option value="overheating">Overheating</mat-option>
+                          <mat-option value="noise">Unusual Noise</mat-option>
+                          <mat-option value="vibration">Excessive Vibration</mat-option>
+                          <mat-option value="powerLoss">Power Loss</mat-option>
+                          <mat-option value="others">Others</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="problem-details"
+                        *ngIf="serviceForm.get('motorProblem')?.value && serviceForm.get('motorProblemType')?.value === 'others'">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Motor Problem Description</mat-label>
+                          <input matInput placeholder="Describe the motor problem..."
+                            formControlName="motorProblemDescription" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Controller Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="controllerProblem"
+                        (change)="onProblemTypeChange('controller', $event.checked)">
+                        <span class="problem-label">Controller Problem</span>
+                      </mat-checkbox>
+                      <mat-form-field appearance="outline" class="problem-dropdown"
+                        *ngIf="serviceForm.get('controllerProblem')?.value">
+                        <mat-label>Controller Problem Type</mat-label>
+                        <mat-select formControlName="controllerProblemType">
+                          <mat-option value="sensorFailure">Sensor Failure</mat-option>
+                          <mat-option value="communicationError">Communication Error</mat-option>
+                          <mat-option value="softwareIssue">Software Issue</mat-option>
+                          <mat-option value="powerModuleFailure">Power Module Failure</mat-option>
+                          <mat-option value="others">Others</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="problem-details"
+                        *ngIf="serviceForm.get('controllerProblem')?.value && serviceForm.get('controllerProblemType')?.value === 'others'">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Controller Problem Description</mat-label>
+                          <input matInput placeholder="Describe the controller problem..."
+                            formControlName="controllerProblemDescription" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Wire Harness Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="wireHarnessProblem"
+                        (change)="onProblemTypeChange('wireHarness', $event.checked)">
+                        <span class="problem-label">Wire Harness Problem</span>
+                      </mat-checkbox>
+                      <mat-form-field appearance="outline" class="problem-dropdown"
+                        *ngIf="serviceForm.get('wireHarnessProblem')?.value">
+                        <mat-label>Wire Harness Problem Type</mat-label>
+                        <mat-select formControlName="wireHarnessProblemType">
+                          <mat-option value="looseConnection">Loose Connection</mat-option>
+                          <mat-option value="damagedWires">Damaged Wires</mat-option>
+                          <mat-option value="shortCircuit">Short Circuit</mat-option>
+                          <mat-option value="corrosion">Corrosion</mat-option>
+                          <mat-option value="others">Others</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <div class="problem-details"
+                        *ngIf="serviceForm.get('wireHarnessProblem')?.value && serviceForm.get('wireHarnessProblemType')?.value === 'others'">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Wire Harness Problem Description</mat-label>
+                          <input matInput placeholder="Describe the wire harness problem..."
+                            formControlName="wireHarnessProblemDescription" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Others Problem -->
+                    <div class="problem-type-item">
+                      <mat-checkbox class="problem-checkbox" formControlName="othersProblem"
+                        (change)="onProblemTypeChange('others', $event.checked)">
+                        <span class="problem-label">Others</span>
+                      </mat-checkbox>
+                      <div class="problem-details" *ngIf="serviceForm.get('othersProblem')?.value">
+                        <mat-form-field appearance="outline" class="problem-text-field">
+                          <mat-label>Other Problem Description</mat-label>
+                          <input matInput placeholder="Describe the other problem..."
+                            formControlName="othersProblemDescription" rows="3" />
+                          <mat-icon matPrefix>description</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+
           <div class="no-vehicle-selected-message" *ngIf="!selectedVehicle">
             <mat-icon class="warning-icon">warning</mat-icon>
             <p>Please select a vehicle from Step 1 to continue with service details.</p>
@@ -215,7 +407,7 @@
             Cancel
           </button>
           <button mat-raised-button color="primary" (click)="stepper.next()" [disabled]="
-            isLoading" class="submit-btn">
+            isLoading || !serviceForm.valid" class="submit-btn">
             <span>Review Details</span>
           </button>
         </div>
@@ -228,51 +420,165 @@
           <div class="review-section">
             <h3 class="review-title">
               <mat-icon>check_circle</mat-icon>
-              service Item Details
+              Service Details Review
             </h3>
-
-            <div class="review-grid">
-              <div class="review-item">
-                <span class="review-label">Barcode:</span>
-                <span class="review-value"></span>
+            <!-- Customer Information Section -->
+            <div class="customer-info-section" *ngIf="customerFound && foundCustomer">
+              <div class="customer-card">
+                <div class="customer-header">
+                  <mat-icon class="customer-icon">person</mat-icon>
+                  <h3 class="customer-title">Customer Information</h3>
+                </div>
+                <div class="customer-details-grid">
+                  <div class="customer-detail-item">
+                    <span class="detail-label">Customer ID:</span>
+                    <span class="detail-value">{{foundCustomer.id}}</span>
+                  </div>
+                  <div class="customer-detail-item">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{foundCustomer.name}}</span>
+                  </div>
+                  <div class="customer-detail-item">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">{{foundCustomer.phone}}</span>
+                  </div>
+                  <div class="customer-detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{foundCustomer.email}}</span>
+                  </div>
+                  <div class="customer-detail-item full-width">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value">{{foundCustomer.address}}</span>
+                  </div>
+                </div>
               </div>
-              <div class="review-item">
-                <span class="review-label">SKU:</span>
-                <span class="review-value"></span>
+            </div>
+            <!-- Job Card for Selected Vehicle -->
+            <div class="job-card-section" *ngIf="selectedVehicle">
+              <div class="job-card">
+                <div class="job-vehicle-info">
+                  <div class="job-vehicle-header">
+                    <mat-icon class="job-vehicle-icon">directions_car</mat-icon>
+                    <h4 class="job-vehicle-title">Selected Vehicle</h4>
+                  </div>
+                  <div class="job-vehicle-details">
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Vehicle:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.year}} {{selectedVehicle.make}}
+                        {{selectedVehicle.model}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">License Plate:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.licensePlate}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Color:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.color}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Type:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.type}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">VIN:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.vin}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Motor Serial no:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.motorSerialNo}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Battery Serial no:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.batterySerialNo}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Charger Serial No:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.chargerSerialNo}}</span>
+                    </div>
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Controller Serial No:</span>
+                      <span class="job-vehicle-value">{{selectedVehicle.controllerSerialNo}}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="review-item full-width">
-                <span class="review-label">Part Name:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item">
-                <span class="review-label">Category:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item">
-                <span class="review-label">Quantity:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item">
-                <span class="review-label">Location:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item full-width">
-                <span class="review-label">Base Price:</span>
-                <span class="review-value"></span>
-              </div>
-
-              <!-- GST Details -->
-              <div class="review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
-                <span class="review-label">SGST:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
-                <span class="review-label">CGST:</span>
-                <span class="review-value"></span>
-              </div>
-              <div class="review-item total-review-item" *ngIf="serviceForm.get('includeGST')?.value === 'yes'">
-                <span class="review-label total-review-label">Total (with GST):</span>
-                <span class="review-value total-review-value"></span>
+            </div>
+            <!--Service Form review section-->
+            <div class="job-card-section" *ngIf="selectedVehicle">
+              <div class="job-card">
+                <div class="job-vehicle-info">
+                  <div class="job-vehicle-header">
+                    <mat-icon class="job-vehicle-icon">build</mat-icon>
+                    <h4 class="job-vehicle-title">Service Request Details</h4>
+                  </div>
+                  <div class="job-vehicle-details">
+                    <div class="job-vehicle-item">
+                      <span class="job-vehicle-label">Service Type:</span>
+                      <span class="job-vehicle-value">{{ serviceForm.get('serviceType')?.value }}</span>
+                    </div>
+                    <ng-container *ngIf="serviceForm.get('chargerProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Charger Problem:</span>
+                        <span class="job-vehicle-value">{{ serviceForm.get('chargerProblemType')?.value }}</span>
+                      </div>
+                      <div class="job-vehicle-item" *ngIf="serviceForm.get('chargerProblemType')?.value === 'others'">
+                        <span class="job-vehicle-label">Charger Problem Description:</span>
+                        <span class="job-vehicle-value">{{serviceForm.get('chargerProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="serviceForm.get('batteryProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Battery Problem:</span>
+                        <span class="job-vehicle-value">{{ serviceForm.get('batteryProblemType')?.value }}</span>
+                      </div>
+                      <div class="job-vehicle-item" *ngIf="serviceForm.get('batteryProblemType')?.value === 'others'">
+                        <span class="job-vehicle-label">Battery Problem Description:</span>
+                        <span class="job-vehicle-value">{{serviceForm.get('batteryProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="serviceForm.get('motorProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Motor Problem:</span>
+                        <span class="job-vehicle-value">{{ serviceForm.get('motorProblemType')?.value }}</span>
+                      </div>
+                      <div class="job-vehicle-item" *ngIf="serviceForm.get('motorProblemType')?.value === 'others'">
+                        <span class="job-vehicle-label">Motor Problem Description:</span>
+                        <span class="job-vehicle-value">{{serviceForm.get('motorProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="serviceForm.get('controllerProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Controller Problem:</span>
+                        <span class="job-vehicle-value">{{ serviceForm.get('controllerProblemType')?.value }}</span>
+                      </div>
+                      <div class="job-vehicle-item"
+                        *ngIf="serviceForm.get('controllerProblemType')?.value === 'others'">
+                        <span class="job-vehicle-label">Controller Problem Description:</span>
+                        <span
+                          class="job-vehicle-value">{{serviceForm.get('controllerProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="serviceForm.get('wireHarnessProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Wire Harness Problem:</span>
+                        <span class="job-vehicle-value">{{ serviceForm.get('wireHarnessProblemType')?.value }}</span>
+                      </div>
+                      <div class="job-vehicle-item"
+                        *ngIf="serviceForm.get('wireHarnessProblemType')?.value === 'others'">
+                        <span class="job-vehicle-label">Wire HarnessDescription:</span>
+                        <span
+                          class="job-vehicle-value">{{serviceForm.get('wireHarnessProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                    <ng-container *ngIf="serviceForm.get('otherProblem')?.value">
+                      <div class="job-vehicle-item">
+                        <span class="job-vehicle-label">Others Description:</span>
+                        <span
+                          class="job-vehicle-value">{{serviceForm.get('otherProblemProblemDescription')?.value}}</span>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

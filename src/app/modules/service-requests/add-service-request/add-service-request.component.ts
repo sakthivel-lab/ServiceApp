@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -16,6 +16,27 @@ export interface Vehicle {
   batterySerialNo: string,
   chargerSerialNo: string,
   controllerSerialNo: string
+}
+
+export interface ServiceFormControls {
+  serviceType: FormControl;
+  chargerProblem: FormControl;
+  chargerProblemType: FormControl;
+  chargerProblemDescription: FormControl;
+  batteryProblem: FormControl;
+  batteryProblemType: FormControl;
+  batteryProblemDescription: FormControl;
+  motorProblem: FormControl;
+  motorProblemType: FormControl;
+  motorProblemDescription: FormControl;
+  controllerProblem: FormControl;
+  controllerProblemType: FormControl;
+  controllerProblemDescription: FormControl;
+  wireHarnessProblem: FormControl;
+  wireHarnessProblemType: FormControl;
+  wireHarnessProblemDescription: FormControl;
+  othersProblem: FormControl;
+  othersProblemDescription: FormControl;
 }
 
 export interface Customer {
@@ -61,12 +82,62 @@ export class AddServiceRequestComponent implements OnInit {
 
   initializeForm(): void {
     this.serviceForm = this.fb.group({
+      // Service Type
+      serviceType: ['general', [Validators.required]],
 
+      // Problem Types
+      chargerProblem: [false],
+      chargerProblemType: [''],
+      chargerProblemDescription: [''],
+
+      batteryProblem: [false],
+      batteryProblemType: [''],
+      batteryProblemDescription: [''],
+
+      motorProblem: [false],
+      motorProblemType: [''],
+      motorProblemDescription: [''],
+
+      controllerProblem: [false],
+      controllerProblemType: [''],
+      controllerProblemDescription: [''],
+
+      wireHarnessProblem: [false],
+      wireHarnessProblemType: [''],
+      wireHarnessProblemDescription: [''],
+
+      othersProblem: [false],
+      othersProblemDescription: ['']
     });
-
-
   }
 
+
+  // Update validation when checkbox changes
+  onProblemTypeChange(problemType: string, isChecked: boolean): void {
+    const typeField = `${problemType}ProblemType`;
+    const descField = `${problemType}ProblemDescription`;
+
+    if (isChecked) {
+      // Make dropdown required when checkbox is checked
+      this.serviceForm.get(typeField)?.setValidators([Validators.required]);
+
+      // Make description required only when dropdown is set to 'others'
+      const currentValue = this.serviceForm.get(typeField)?.value;
+      if (currentValue === 'others') {
+        this.serviceForm.get(descField)?.setValidators([Validators.required]);
+      } else {
+        this.serviceForm.get(descField)?.clearValidators();
+      }
+    } else {
+      // Remove all validators when checkbox is unchecked
+      this.serviceForm.get(typeField)?.clearValidators();
+      this.serviceForm.get(descField)?.clearValidators();
+    }
+
+    // Update validation
+    this.serviceForm.get(typeField)?.updateValueAndValidity();
+    this.serviceForm.get(descField)?.updateValueAndValidity();
+  }
 
   onCancel(): void {
     if (this.serviceForm.dirty) {
