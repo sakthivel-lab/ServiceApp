@@ -12,10 +12,10 @@ export interface Vehicle {
   color: string;
   type: string;
   vin: string;
-  motorSerialNo: string,
-  batterySerialNo: string,
-  chargerSerialNo: string,
-  controllerSerialNo: string
+  motorSerialNo: string;
+  batterySerialNo: string;
+  chargerSerialNo: string;
+  controllerSerialNo: string;
 }
 
 export interface ServiceFormControls {
@@ -37,6 +37,7 @@ export interface ServiceFormControls {
   wireHarnessProblemDescription: FormControl;
   othersProblem: FormControl;
   othersProblemDescription: FormControl;
+  assignedEngineer: FormControl;
 }
 
 export interface Customer {
@@ -46,6 +47,14 @@ export interface Customer {
   email: string;
   address: string;
   vehicles: Vehicle[];
+}
+
+export interface Engineer {
+  id: string;
+  name: string;
+  role: string;
+  workload: number;
+  status: 'Available' | 'Busy' | 'On Leave';
 }
 
 @Component({
@@ -65,6 +74,45 @@ export class AddServiceRequestComponent implements OnInit {
   customerFound: boolean = false;
   foundCustomer: Customer | null = null;
   selectedVehicle: Vehicle | null = null;
+
+  // Engineer Assignment Properties
+  availableEngineers: Engineer[] = [
+    {
+      id: 'ENG001',
+      name: 'John Smith',
+      role: 'Senior Engineer',
+      workload: 3,
+      status: 'Available'
+    },
+    {
+      id: 'ENG002',
+      name: 'Sarah Johnson',
+      role: 'Electrical Engineer',
+      workload: 5,
+      status: 'Busy'
+    },
+    {
+      id: 'ENG003',
+      name: 'Mike Wilson',
+      role: 'Mechanical Engineer',
+      workload: 2,
+      status: 'Available'
+    },
+    {
+      id: 'ENG004',
+      name: 'Emily Davis',
+      role: 'Service Engineer',
+      workload: 8,
+      status: 'Busy'
+    },
+    {
+      id: 'ENG005',
+      name: 'Robert Brown',
+      role: 'Junior Engineer',
+      workload: 1,
+      status: 'On Leave'
+    }
+  ];
 
 
 
@@ -107,10 +155,12 @@ export class AddServiceRequestComponent implements OnInit {
       wireHarnessProblemDescription: [''],
 
       othersProblem: [false],
-      othersProblemDescription: ['']
+      othersProblemDescription: [''],
+
+      // Engineer Assignment
+      assignedEngineer: ['', [Validators.required]]
     });
   }
-
 
   // Update validation when checkbox changes
   onProblemTypeChange(problemType: string, isChecked: boolean): void {
@@ -346,6 +396,26 @@ export class AddServiceRequestComponent implements OnInit {
     this.selectedVehicle = null;
   }
 
+  // Engineer Assignment Methods
+  getWorkloadClass(workload: number): string {
+    if (workload <= 2) return 'workload-low';
+    if (workload <= 5) return 'workload-medium';
+    return 'workload-high';
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Available':
+        return 'status-available';
+      case 'Busy':
+        return 'status-busy';
+      case 'On Leave':
+        return 'status-on-leave';
+      default:
+        return '';
+    }
+  }
+
   // Method to populate form with customer and vehicle details
   populateServiceForm(): void {
     if (this.foundCustomer && this.selectedVehicle) {
@@ -370,10 +440,25 @@ export class AddServiceRequestComponent implements OnInit {
   onVehicleSelected(vehicle: Vehicle): void {
     this.selectedVehicle = vehicle;
     this.populateServiceForm();
+
+    // Force form validation update with timeout to ensure DOM updates
+    setTimeout(() => {
+      this.serviceForm.updateValueAndValidity();
+      // Manually trigger change detection
+      this.serviceForm.markAsDirty();
+    }, 0);
   }
 
   getSelectedVehicleDisplay(): string {
     if (!this.selectedVehicle) return 'No vehicle selected';
     return `${this.selectedVehicle.year} ${this.selectedVehicle.make} ${this.selectedVehicle.model} (${this.selectedVehicle.licensePlate})`;
+  }
+
+  getSelectedEngineerDisplay(): string {
+    const engineerId = this.serviceForm.get('assignedEngineer')?.value;
+    if (!engineerId) return 'Choose an engineer...';
+
+    const engineer = this.availableEngineers.find(e => e.id === engineerId);
+    return engineer ? engineer.name : 'Choose an engineer...';
   }
 }

@@ -387,11 +387,50 @@
                     </div>
                   </div>
                 </div>
-              </form>
 
+
+                <!-- Engineer Assignment Section -->
+                <div class="engineer-assignment-section" *ngIf="selectedVehicle">
+                  <div class="engineer-assignment-card">
+                    <div class="engineer-assignment-header">
+                      <mat-icon class="engineer-assignment-icon">engineering</mat-icon>
+                      <h4 class="engineer-assignment-title">Assign Engineer</h4>
+                    </div>
+                    <div class="engineer-selection">
+                      <mat-form-field appearance="outline" class="engineer-select-field">
+                        <mat-label>Select Engineer</mat-label>
+                        <mat-select formControlName="assignedEngineer">
+                          <!-- Use the form control's value directly in the trigger -->
+                          <mat-select-trigger>
+                            {{ getSelectedEngineerDisplay() }}
+                          </mat-select-trigger>
+                          <mat-option value="">Choose an engineer...</mat-option>
+                          <mat-option *ngFor="let engineer of availableEngineers" [value]="engineer.id">
+                            <div class="engineer-option">
+                              <div class="engineer-name-section">
+                                <span class="engineer-name">{{engineer.name}}</span>
+                              </div>
+                              <div class="engineer-chips-section">
+                                <span class="role-chip" [ngClass]="'role-chip'">
+                                  {{engineer.role}}
+                                </span>
+                                <span class="workload-chip" [ngClass]="getWorkloadClass(engineer.workload)">
+                                  {{engineer.workload}} tasks
+                                </span>
+                                <span class="status-chip" [ngClass]="getStatusClass(engineer.status)">
+                                  {{engineer.status}}
+                                </span>
+                              </div>
+                            </div>
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-
 
           <div class="no-vehicle-selected-message" *ngIf="!selectedVehicle">
             <mat-icon class="warning-icon">warning</mat-icon>

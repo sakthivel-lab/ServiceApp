@@ -23,6 +23,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { NgChartsModule } from 'ng2-charts';
 import { MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   exports: [
@@ -47,7 +48,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatSortModule,
     MatStepperModule,
     MatRadioModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatChipsModule
   ]
 })
 export class MaterialModule { }
